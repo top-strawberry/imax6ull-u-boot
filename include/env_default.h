@@ -10,6 +10,8 @@
 
 #include <env_callback.h>
 
+// 板子第一次运行 uboot 的时候, 用默认值来设置 bootcmd 环境变量
+
 #ifdef DEFAULT_ENV_INSTANCE_EMBEDDED
 env_t environment __PPCENV__ = {
 	ENV_CRC,	/* CRC Sum */

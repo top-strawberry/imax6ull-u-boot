@@ -828,7 +828,7 @@ next:
 		if (rename(tmpname, newname))
 			return 1;
 	}
-
+    conf_message(_("========================"));
 	conf_message(_("configuration written to %s"), newname);
 
 	sym_set_change_count(0);

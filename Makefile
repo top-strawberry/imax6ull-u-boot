@@ -2,6 +2,8 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
+#顶层Makefile分析
+
 VERSION = 2016
 PATCHLEVEL = 03
 SUBLEVEL =
@@ -408,7 +410,14 @@ PHONY += outputmakefile
 # separate output directory. This allows convenient use of make in the
 # output directory.
 outputmakefile:
+	@echo ==============================================
+	@echo KBUILD_SRC = $(KBUILD_SRC)
 ifneq ($(KBUILD_SRC),)
+	@echo srctree = $(srctree)
+	@echo CONFIG_SHELL = $(CONFIG_SHELL)
+	@echo objtree = $(objtree)
+	@echo VERSION = $(VERSION)
+	@echo PATCHLEVEL = $(PATCHLEVEL)
 	$(Q)ln -fsn $(srctree) source
 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/mkmakefile \
 	    $(srctree) $(objtree) $(VERSION) $(PATCHLEVEL)
@@ -477,6 +486,10 @@ config: scripts_basic outputmakefile FORCE
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
 %config: scripts_basic outputmakefile FORCE
+	@echo ==============================================
+	@echo outputmakefile = $(outputmakefile)
+	@echo scripts_basic = $(scripts_basic)
+	@echo build = $(build)
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
 else
@@ -818,6 +831,9 @@ ifeq ($(CONFIG_DM_I2C_COMPAT),y)
 	@echo "===================================================="
 endif
 
+all_y:
+	@echo ALL-y = $(ALL-y)
+
 PHONY += dtbs
 dtbs dts/dt.dtb: checkdtc u-boot
 	$(Q)$(MAKE) $(build)=dts dtbs
@@ -833,8 +849,14 @@ u-boot.bin: u-boot-dtb.bin FORCE
 	$(call if_changed,copy)
 else
 u-boot.bin: u-boot-nodtb.bin FORCE
+	@echo u-boot.bin ============================================================
 	$(call if_changed,copy)
 endif
+
+separate:
+	@echo CONFIG_OF_SEPARATE = $(CONFIG_OF_SEPARATE)
+	@echo FORCE = $(FORCE)
+
 
 %.imx: %.bin
 	$(Q)$(MAKE) $(build)=arch/arm/imx-common $@
@@ -1171,6 +1193,8 @@ cmd_smap = \
 		-c $(srctree)/common/system_map.c -o common/system_map.o
 
 u-boot:	$(u-boot-init) $(u-boot-main) u-boot.lds FORCE
+	@echo u-boot ============================================================
+	@echo cmd_u-boot__ = $(cmd_u-boot__)
 	$(call if_changed,u-boot__)
 ifeq ($(CONFIG_KALLSYMS),y)
 	$(call cmd,smap)
@@ -1308,6 +1332,8 @@ cmd_cpp_lds = $(CPP) -Wp,-MD,$(depfile) $(cpp_flags) $(LDPPFLAGS) -ansi \
 		-D__ASSEMBLY__ -x assembler-with-cpp -P -o $@ $<
 
 u-boot.lds: $(LDSCRIPT) prepare FORCE
+	@echo u-boot.lds ============================================================
+	@echo LDSCRIPT =  $(LDSCRIPT)
 	$(call if_changed_dep,cpp_lds)
 
 spl/u-boot-spl.bin: spl/u-boot-spl
@@ -1573,6 +1599,20 @@ endif
 	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
 %.symtypes: %.c prepare scripts FORCE
 	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
+
+
+arch/arm/cpu/armv7/start.o: arch/arm/cpu/armv7/start.S
+	@echo Q = $(Q)
+	@echo MAKE = $(MAKE)
+	@echo build = $(build)
+	@echo build-dir = $(build-dir)
+	@echo target-dir = $(target-dir)
+	@echo notdir = $(notdir $@)
+	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
+
+mytest:
+	@echo head-y = $(head-y)
+	@echo libs-y = $(libs-y)
 
 # Modules
 /: prepare scripts FORCE

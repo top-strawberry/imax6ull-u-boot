@@ -117,6 +117,17 @@ __build: $(if $(KBUILD_BUILTIN),$(builtin-target) $(lib-target) $(extra-y)) \
 	 $(if $(KBUILD_MODULES),$(obj-m) $(modorder-target)) \
 	 $(subdir-ym) $(always)
 	@:
+	@echo __build =======================================================
+	@echo __build = $(__build)
+	@echo KBUILD_BUILTIN = $(KBUILD_BUILTIN)
+	@echo builtin-target = $(builtin-target)
+	@echo lib-target = $(lib-target)
+	@echo extra-y = $(extra-y)
+	@echo KBUILD_MODULES = $(KBUILD_MODULES)
+	@echo obj-m = $(obj-m)
+	@echo modorder-target = $(modorder-target)
+	@echo subdir-ym = $(subdir-ym)
+	@echo always = $(always)
 
 # Linus' kernel sanity checking tool
 ifneq ($(KBUILD_CHECKSRC),0)
@@ -277,6 +288,9 @@ endef
 
 # Built-in and composite module parts
 $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
+	@echo =================================================
+	@echo cmd_checksrc = $(cmd_checksrc)
+	@echo cc_o_c = $(cmd_cc_o_c)
 	$(call cmd,force_checksrc)
 	$(call if_changed_rule,cc_o_c)
 
@@ -313,6 +327,8 @@ quiet_cmd_as_o_S = AS $(quiet_modtag)  $@
 cmd_as_o_S       = $(CC) $(a_flags) -c -o $@ $<
 
 $(obj)/%.o: $(src)/%.S FORCE
+	@echo =================================================
+	@echo cmd_as_o_S = $(cmd_as_o_S)
 	$(call if_changed_dep,as_o_S)
 
 targets += $(real-objs-y) $(real-objs-m) $(lib-y)
@@ -356,6 +372,10 @@ cmd_link_o_target = $(if $(strip $(obj-y)),\
 		      rm -f $@; $(AR) rcs$(KBUILD_ARFLAGS) $@)
 
 $(builtin-target): $(obj-y) FORCE
+	@echo builtin-target =================================================
+	@echo builtin-target = $(builtin-target)
+	@echo obj-y = $(obj-y)
+	@echo cmd_link_o_target = $(cmd_link_o_target)
 	$(call if_changed,link_o_target)
 
 targets += $(builtin-target)
